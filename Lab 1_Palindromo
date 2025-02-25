@@ -1,0 +1,40 @@
+#include <stdio.h>
+#include <math.h>
+#include <stdbool.h>
+
+bool palindromo(int num) {
+    if (num < 0) {
+        return false;
+    }
+    if (num == 0) {
+        return true;
+    }
+
+    int numdigitos = log10(num) + 1;
+    int fra1 = pow(10, numdigitos - 1);
+    int fra2 = 1;
+
+    for (int i = 0; i < numdigitos / 2; i++) {
+        if ((num / fra1) % 10 != (num / fra2) % 10) {
+            return false;
+        }
+        fra1 /= 10;
+        fra2 *= 10;
+    }
+    return true;
+}
+
+int main(void) {
+    int num;
+    printf("Ingrese un número: ");
+    scanf("%d", &num);
+
+    if (palindromo(num)) {
+        printf("Es palíndromo\n");
+    } else {
+        printf("No es palíndromo\n");
+    }
+
+    return 0;
+}
+
