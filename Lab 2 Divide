@@ -1,0 +1,44 @@
+
+#include <stdio.h>
+#include <limits.h>
+#include <stdlib.h>
+
+long long dividir(long long x, long long y) {
+    if (y == 0) {
+        printf("Error: División por cero.\n");
+        exit(EXIT_FAILURE);
+    }
+
+    if (x == INT_MIN && y == -1)
+        return INT_MAX;
+
+    int signo = ((x < 0) ^ (y < 0)) ? -1 : 1;
+    x = llabs(x);
+    y = llabs(y);
+    long long cociente = 0;
+    
+    for (int i = 31; i >= 0; --i) {
+        if ((y << i) <= x) {
+            x -= (y << i);
+            cociente |= (1LL << i);
+        }
+    }
+
+    return signo * cociente;
+}
+
+int main(void) {
+    long long dividendo, divisor;
+    
+    printf("Ingrese el dividendo: ");
+    scanf("%lld", &dividendo);
+    
+    printf("Ingrese el divisor: ");
+    scanf("%lld", &divisor);
+
+    long long resultado = dividir(dividendo, divisor);
+    printf("Resultado: %lld\n", resultado);
+
+    return 0;
+}
+
