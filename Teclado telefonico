@@ -1,0 +1,73 @@
+//
+//  main.cpp
+//  Práctica 3 ADA
+//
+//  Created by Sofia Riquelme on 10/03/25.
+//
+#include <iostream>
+#include <vector>
+#include <queue>
+
+using namespace std;
+vector<string> oP(vector<int> &numeros) {
+    
+    vector<string> teclado = {"", "", "abc", "def", "ghi", "jkl", "mno", "pqrs", "tuv", "wxyz"};
+    
+    vector<string> resultado;
+    queue<string> cola;
+    cola.push("");
+
+    while (!cola.empty()) {
+        string combinacion = cola.front();
+        cola.pop();
+
+        if (combinacion.length() == numeros.size()) {
+            resultado.push_back(combinacion);
+        }
+        else {
+            int numero = numeros[combinacion.length()];
+
+            if (numero < 2 || numero > 9) {
+                continue;
+            }
+
+            for (char letra : teclado[numero]) {
+                cola.push(combinacion + letra);
+            }
+        }
+    }
+
+    return resultado;
+}
+void imprimir(const vector<string> &palabras) {
+    for (const string &palabra : palabras) {
+        cout << palabra << " ";
+    }
+    cout << endl;
+}
+
+int main() {
+    vector<int> numeros;
+    int numero;
+
+    cout << "Ingrese SOLO 4 numeros  (entre 2 y 9), separados por espacios: ";
+
+    while (numeros.size() < 4 && cin >> numero) {
+        if (numero < 2 || numero > 9) {
+            cout << "Número inválido.";
+            continue;
+        }
+        numeros.push_back(numero);
+    }
+
+    if (numeros.empty()) {
+        cout << "El número que ingreso no es válido." << endl;
+        return 0;
+    }
+
+    vector<string> palabras = oP(numeros);
+    cout << "Posibles combinaciones: ";
+    imprimir(palabras);
+
+    return 0;
+}
