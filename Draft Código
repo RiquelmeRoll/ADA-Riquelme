@@ -1,0 +1,52 @@
+#include <iostream>
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+class Solucion {
+public:
+    long long dividirJugadores(std::vector<int>& habilidad) {
+        sort(habilidad.begin(), habilidad.end());
+
+        int n = habilidad.size();
+        int total_habilidad = habilidad[0] + habilidad[n - 1];
+        long long suma_quimica = 0;
+
+        for (int i = 0; i < n / 2; i++) {
+            if (habilidad[i] + habilidad[n - i - 1] != total_habilidad) {
+                return -1;
+            }
+            suma_quimica += (long long)(habilidad[i] * habilidad[n - i - 1]);
+        }
+
+        return suma_quimica;
+    }
+};
+
+int main() {
+    Solucion solucion;
+    vector<int> habilidades;
+    int n;
+    
+    cout << "Ingrese el número de jugadores: ";
+    cin >> n;
+    
+    cout << "Ingrese las habilidades de los jugadores separadas por espacios: ";
+    for (int i = 0; i < n; i++) {
+        int h;
+        cin >> h;
+        habilidades.push_back(h);
+    }
+    
+    long long resultado = solucion.dividirJugadores(habilidades);
+    
+    if (resultado == -1) {
+        cout << "No es posible dividir a los jugadores en parejas con la misma suma de habilidades." << endl;
+    }
+    
+    else {
+        cout << "La suma de la química de las parejas es: " << resultado << endl;
+    }
+
+    return 0;
+}
