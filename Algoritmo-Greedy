@@ -1,0 +1,80 @@
+#include <stdio.h>
+#include <stdbool.h>
+
+
+bool es_primo(int n) {
+    if (n <= 1) return false;
+    if (n <= 3) return true;
+    if (n % 2 == 0 || n % 3 == 0) return false;
+    for (int i = 5; i * i <= n; i += 6) {
+        if (n % i == 0 || n % (i + 2) == 0) return false;
+    }
+    return true;
+}
+
+void fibo_filtrado(int k, int *fib_secuencia, int *lon) {
+    fib_secuencia[0] = 0;
+    fib_secuencia[1] = 1;
+    *lon = 2;
+    int i = 2;
+    while (fib_secuencia[*lon - 1] <= k) {
+        int next_fib = fib_secuencia[*lon - 1] + fib_secuencia[*lon - 2];
+        if (!es_primo(i)) {
+            fib_secuencia[*lon] = next_fib;
+            (*lon)++;
+        }
+        i++;
+    }
+    (*lon)--;
+}
+
+int encontrar_terminos_fibonacci(int k, int *fib_secuencia, int fib_lon, int *terminos) {
+    int terminos_lon = 0;
+    int i = fib_lon - 1;
+
+    while (k > 0 && i >= 0) {
+        if (fib_secuencia[i] <= k) {
+            terminos[terminos_lon++] = fib_secuencia[i];
+            k -= fib_secuencia[i];
+        }
+        i--;
+    }
+    return terminos_lon;
+}
+
+int main() {
+    int dia, mes, year, k;
+    
+    printf("Ingresa tu dia de nacimiento: ");
+    scanf("%d", &dia);
+    printf("Ingresa tu mes de nacimiento: ");
+    scanf("%d", &mes);
+    printf("Ingresa tu ano de nacimiento: ");
+    scanf("%d", &year);
+
+    k = (dia * 100) + (mes * 10) + (year % 100);
+    printf("Valor de K: %d\n", k);
+
+    int fib_secuencia[100];
+    int fib_lon = 0;
+    fibo_filtrado(k, fib_secuencia, &fib_lon);
+
+    printf("Secuencia de Fibonacci filtrada: ");
+    for (int i = 0; i < fib_lon; i++) {
+        printf("%d ", fib_secuencia[i]);
+    }
+    printf("\n");
+
+    int terminos_optimos[100];
+    int num_terminos = encontrar_terminos_fibonacci(k, fib_secuencia, fib_lon, terminos_optimos);
+
+    printf("Terminos optimos: ");
+    for (int i = 0; i < num_terminos; i++) {
+        printf("%d ", terminos_optimos[i]);
+    }
+    printf("\nNumero de terminos: %d\n", num_terminos);
+
+    printf("\nRiquelme Cuellar Laura Sofía\n");
+
+    return 0;
+}
