@@ -1,0 +1,127 @@
+#include <stdbool.h>
+#include <string.h>
+#include <stdlib.h>
+#include <stdio.h>
+
+int memo[31][31][31];
+
+bool are_anagrams(const char* s1, int s1_start, const char* s2, int s2_start, int len);
+
+bool _isScramble(const char* s1, const char* s2, int s1_start, int s2_start, int len);
+
+bool isScramble(char* s1, char* s2);
+
+bool are_anagrams(const char* s1, int s1_start, const char* s2, int s2_start, int len) {
+    int freq[26] = {0};
+
+    for (int k = 0; k < len; k++) {
+        freq[s1[s1_start + k] - 'a']++;
+    }
+
+    for (int k = 0; k < len; k++) {
+        freq[s2[s2_start + k] - 'a']--;
+    }
+
+    for (int k = 0; k < 26; k++) {
+        if (freq[k] != 0) {
+            return false;
+        }
+    }
+    return true;
+}
+
+bool _isScramble(const char* s1, const char* s2, int s1_start, int s2_start, int len) {
+    
+    if (memo[s1_start][s2_start][len] != 0) {
+        return memo[s1_start][s2_start][len] == 1;
+    }
+
+    bool identical = true;
+    for (int k = 0; k < len; k++) {
+        if (s1[s1_start + k] != s2[s2_start + k]) {
+            identical = false;
+            break;
+        }
+    }
+    if (identical) {
+        memo[s1_start][s2_start][len] = 1;
+        return true;
+    }
+
+    if (!are_anagrams(s1, s1_start, s2, s2_start, len)) {
+        memo[s1_start][s2_start][len] = -1;
+        return false;
+    }
+    
+    for (int i = 1; i < len; i++) {
+
+        if (_isScramble(s1, s2, s1_start, s2_start, i) &&
+            _isScramble(s1, s2, s1_start + i, s2_start + i, len - i)) {
+            memo[s1_start][s2_start][len] = 1;
+            return true;
+        }
+
+        if (_isScramble(s1, s2, s1_start, s2_start + len - i, i) &&
+            _isScramble(s1, s2, s1_start + i, s2_start, len - i)) {
+            memo[s1_start][s2_start][len] = 1;
+            return true;
+        }
+    }
+
+    memo[s1_start][s2_start][len] = -1;
+    return false;
+}
+
+bool isScramble(char* s1, char* s2) {
+    size_t n = strlen(s1);
+    size_t m = strlen(s2);
+
+    if (n != m) {
+        return false;
+    }
+
+    if (n == 0) return true;
+    if (n == 1) return strcmp(s1, s2) == 0;
+
+    for (int i = 0; i <= (int)n; i++) {
+        for (int j = 0; j <= (int)n; j++) {
+            for (int k = 0; k <= (int)n; k++) {
+                memo[i][j][k] = 0;
+            }
+        }
+    }
+
+    return _isScramble(s1, s2, 0, 0, (int)n);
+}
+
+int main() {
+    char s1_input[31];
+    char s2_input[31];
+
+    printf("Ingrese la primera cadena (s1, max 30 caracteres): ");
+    if (scanf("%30s", s1_input) != 1) {
+        printf("Error al leer s1. Saliendo.\n");
+        return 1;
+    }
+
+    printf("Ingrese la segunda cadena (s2, max 30 caracteres): ");
+    if (scanf("%30s", s2_input) != 1) {
+        printf("Error al leer s2. Saliendo.\n");
+        return 1;
+    }
+
+    if (strlen(s1_input) != strlen(s2_input)) {
+        printf("Las longitudes de las cadenas deben ser iguales.\n");
+        return 0;
+    }
+    if (strlen(s1_input) == 0) {
+        printf("Una o ambas cadenas están vacías. Resultado: %s\n", isScramble(s1_input, s2_input) ? "true" : "false");
+        return 0;
+    }
+
+    printf("¿Es \"%s\" una cadena codificada de \"%s\"? %s\n",
+           s2_input, s1_input,
+           isScramble(s1_input, s2_input) ? "true" : "false");
+    return 0;
+}
+
