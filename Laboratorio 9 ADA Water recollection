@@ -1,0 +1,66 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+int maximo(int a, int b) {
+    return (a > b) ? a : b;
+}
+
+int calcularAguaAtrapada(int* altura, int tamano) {
+    if (tamano <= 1) {
+        return 0;
+    }
+
+    int izquierda = 0;
+    int derecha = tamano - 1;
+    int max_izquierda = 0;
+    int max_derecha = 0;
+    int agua_total = 0;
+
+    while (izquierda < derecha) {
+        max_izquierda = maximo(max_izquierda, altura[izquierda]);
+        max_derecha = maximo(max_derecha, altura[derecha]);
+
+        if (altura[izquierda] < altura[derecha]) {
+            agua_total += max_izquierda - altura[izquierda];
+            izquierda++;
+        } else {
+            agua_total += max_derecha - altura[derecha];
+            derecha--;
+        }
+    }
+
+    return agua_total;
+}
+
+int main() {
+    int n;
+
+    printf("Ingrese el número de barras (tamaño del arreglo): ");
+    if (scanf("%d", &n) != 1 || n <= 0) {
+        printf("Entrada no válida. El tamaño debe ser un número entero positivo.\n");
+        return 1;
+    }
+
+    int* alturas = (int*)malloc(n * sizeof(int));
+    if (alturas == NULL) {
+        printf("Error al asignar memoria.\n");
+        return 1;
+    }
+
+    printf("Ingrese las alturas de las barras (una por una):\n");
+    for (int i = 0; i < n; i++) {
+        printf("Altura en la posición %d: ", i);
+        if (scanf("%d", &alturas[i]) != 1 || alturas[i] < 0) {
+            printf("Entrada no válida. Debe ser un entero no negativo.\n");
+            free(alturas);
+            return 1;
+        }
+    }
+
+    int resultado = calcularAguaAtrapada(alturas, n);
+    printf("La cantidad total de agua atrapada es: %d\n", resultado);
+
+    free(alturas);
+    return 0;
+}
+
