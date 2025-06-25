@@ -1,0 +1,110 @@
+#include <stdio.h>
+#include <string.h> 
+#include <stdlib.h> 
+
+
+typedef struct {
+    char nombre[20];
+    int peso;
+    int precio;
+} Item;
+
+int max(int a, int b) {
+    return (a > b) ? a : b;
+}
+
+int mochila(Item items[], int numItems, int capacidad, int st_tabla[numItems + 1][capacidad + 1]) {
+    
+    for (int i = 0; i <= numItems; i++) {
+        for (int c = 0; c <= capacidad; c++) {
+            // Caso base: si no hay ítems o la capacidad es 0, el valor es 0
+            if (i == 0 || c == 0) {
+                st_tabla[i][c] = 0;
+            } 
+            else {
+                if (items[i - 1].peso <= c) {
+                    
+                    int comparar_con_item = items[i - 1].precio+ st_tabla[i - 1][c - items[i - 1].peso];
+
+                    int comparar_sin_item = st_tabla[i - 1][c];
+                    st_tabla[i][c] = max(comparar_con_item, comparar_sin_item);
+                } 
+                else {
+                    // Cuando no cabe lo descartamos
+                    st_tabla[i][c] = st_tabla[i - 1][c];
+                }
+            }
+        }
+    }
+
+    return st_tabla[numItems][capacidad];
+}
+//Funcion que resuelve el problema
+void construir_solucion(Item items[], int numItems, int capacidad, int st_tabla[numItems + 1][capacidad + 1]) {
+    printf("\nItems seleccionados para la mochila:\n");
+    int peso_actual = capacidad;
+    for (int i = numItems; i > 0; i--) {
+        // Si el valor en la celda actual es diferente al valor de la celda de arriba
+        // Incluimos el item actual
+        if (st_tabla[i][peso_actual] != st_tabla[i - 1][peso_actual]) {
+            printf("- %s (Peso: %d lbs, Valor: $%d)\n", items[i - 1].nombre, items[i - 1].peso, items[i - 1].precio);
+            // Resta el peso del item seleccionado 
+            peso_actual -= items[i - 1].peso;
+        }
+    }
+}
+
+void print_st_tabla(int numItems, int capacidad, int st_tabla[numItems + 1][capacidad + 1], Item items[]) {
+    printf("\n       \n");
+    printf("     ");
+    
+    for (int c = 0; c <= capacidad; c++) {
+        printf("%4d ", c);
+    }
+    printf("\n");
+    printf("---- "); 
+
+    for (int c = 0; c <= capacidad; c++) {
+        printf("-----");
+    }
+    printf("\n");
+
+    for (int i = 0; i <= numItems; i++) {
+        if (i == 0) {
+            printf("Ninguno ");
+        } else {
+            printf("%-4s ", items[i - 1].nombre); 
+        }
+
+        for (int c = 0; c <= capacidad; c++) {
+            printf("%4d ", st_tabla[i][c]);
+        }
+        printf("\n");
+    }
+}
+
+//Definición de los items con peso y precio
+int main() {
+
+    Item items[] = {
+        {"iPhone", 1, 2000},
+        {"Guitarra", 1, 1500},
+        {"Laptop", 3, 2000},
+        {"Estereo", 4, 3000}
+    };
+    int numItems = sizeof(items) / sizeof(items[0]);
+    int capacidad = 4; 
+    int st_tabla[numItems + 1][capacidad + 1];
+
+    // Calcular el valor máximo
+    int valor_max = mochila(items, numItems, capacidad, st_tabla);
+
+    printf("Capacidad maxima de la mochila: %d lbs\n", capacidad);
+    printf("Valor maximo que se puede obtener: $%d\n", valor_max);
+
+    construir_solucion(items, numItems, capacidad, st_tabla);
+    printf("\nTabla de soluciones:\n");
+    print_st_tabla(numItems, capacidad, st_tabla, items);
+
+    return 0;
+}
